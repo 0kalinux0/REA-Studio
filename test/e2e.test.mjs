@@ -11,6 +11,9 @@ import { fileURLToPath } from 'node:url';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 process.env.MINDFLOW_DATA = fs.mkdtempSync(path.join(os.tmpdir(), 'mindflow-test-'));
+// This test checks behaviour with no AI credentials configured.
+delete process.env.ANTHROPIC_API_KEY;
+delete process.env.ANTHROPIC_AUTH_TOKEN;
 const { startServer } = await import('../server/index.mjs');
 const { findChrome } = await import('../server/browser.mjs');
 

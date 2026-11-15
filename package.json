@@ -4,13 +4,12 @@
   "description": "A GUI that uses REA to analyse reference software and build customised applications from the findings.",
   "scripts": {
     "start": "node bin/studio.mjs",
-    "test": "node --test test/"
+    "test": "node --test \"test/*.test.mjs\""
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/0kalinux0/mindflow.git"
   },
-  "license": "MIT",
   "bugs": {
     "url": "https://github.com/0kalinux0/mindflow/issues"
   },

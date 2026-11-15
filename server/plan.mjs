@@ -22,6 +22,8 @@ export function selectedElements(project) {
 
 const slug = (s) => String(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'page';
 const singular = (s) => s.toLowerCase().replace(/ies$/, 'y').replace(/s$/, '');
+/** “Recent orders” → “order”: the thing a table lists, without list adjectives. */
+const entityName = (s) => singular(String(s).toLowerCase().replace(/\b(recent|latest|all|my|your|new|top|active|open|current|list of|the)\b/g, ' ').replace(/\s+/g, ' ').trim()) || 'record';
 
 function luminance(hex) {
   const n = parseInt(hex.slice(1), 16);
@@ -83,13 +85,13 @@ function widgetFor(el) {
   const d = el.data || {};
   switch (el.kind) {
     case 'cards': return { ...base, type: 'stats', title: d.label || 'Overview', cards: (d.cards || []).map((c) => ({ label: c.heading || c.text?.[0] || 'Metric' })) };
-    case 'table': return { ...base, type: 'table', title: d.name || 'Records', entity: slug(singular(d.name || d.columns?.[0] || 'record')), columns: d.columns?.length ? d.columns : ['Name', 'Details'] };
+    case 'table': return { ...base, type: 'table', title: d.name || 'Records', entity: slug(entityName(d.name || d.columns?.[0] || 'record')), columns: d.columns?.length ? d.columns : ['Name', 'Details'] };
     case 'form': return { ...base, type: 'form', title: d.label || 'Form', fields: (d.fields || []).map((f) => ({ label: f.name || 'Field', type: f.role })), submit: d.buttons?.[0] || 'Submit' };
     case 'search': return { ...base, type: 'search', placeholder: d.fields?.[0]?.name || 'Search' };
     case 'tabs': return { ...base, type: 'tabs', tabs: d.tabs || [] };
     case 'action': return { ...base, type: 'action', label: d.label };
     case 'dialog': return { ...base, type: 'section', title: d.label || 'Dialog', text: 'A dialog was open in the reference here.' };
-    case 'media': return { ...base, type: 'chart', title: d.label || 'Chart' };
+    case 'media': return { ...base, type: 'chart', title: d.region || d.label || 'Chart', label: d.label };
     case 'section': return { ...base, type: 'section', title: d.label || d.headings?.[0] || 'Section', text: '' };
     case 'capability': return { ...base, type: 'capability', title: d.group, entity: slug(singular(d.group || 'item')), operations: d.operations || [] };
     case 'described': return { ...base, type: 'section', title: d.text, text: 'Described by you; needs the AI build engine or a follow-up request to implement.', described: true };
@@ -144,7 +146,10 @@ export function buildPlan(project) {
   if (o.placement) navigation.placement = o.placement;
 
   // ---- pages & widgets ----
-  const widgets = chosen.map(widgetFor).filter(Boolean);
+  let widgets = chosen.map(widgetFor).filter(Boolean);
+  // A named region that only wraps a table, chart or form would otherwise show up twice.
+  const concrete = new Set(widgets.filter((w) => ['table', 'chart', 'form', 'stats'].includes(w.type)).map((w) => String(w.title).toLowerCase()));
+  widgets = widgets.filter((w) => !(w.type === 'section' && !w.described && !w.note && concrete.has(String(w.title).toLowerCase())));
   const pages = [];
   const addPage = (title, extra = {}) => {
     let id = slug(title);
@@ -185,6 +190,7 @@ export function buildPlan(project) {
   if (empty.length) assumptions.push(`Pages listed in navigation but never observed get a placeholder: ${empty.join(', ')}. Add those pages as references or describe them.`);
   navigation.items = pages.map((p) => ({ label: p.title, pageId: p.id }));
 
+  if (nav && home.widgets.length && !home.placeholder && chosen.some((e) => e.refId !== nav.refId && ['section', 'feature'].includes(e.category))) assumptions.push(`Content from other references was placed on the first page (“${home.title}”) because nothing observed says where it belongs. Rename the page or add a note to move things.`);
   for (const w of widgets) if (w.type === 'action') assumptions.push(`What the “${w.label}” button does was not observed; it is wired to the nearest matching feature or left as a stub.`);
   if (widgets.some((w) => w.type === 'table')) assumptions.push('Table rows are stored locally in the browser and seeded with placeholder data. Reference data and server APIs are not copied.');
   if (widgets.some((w) => w.type === 'capability')) assumptions.push('Desktop capabilities are rebuilt as browser-based record managers; operations are inferred from channel names.');

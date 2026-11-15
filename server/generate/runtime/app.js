@@ -20,6 +20,7 @@ const svg = (tag, attrs = {}) => {
   for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
   return el;
 };
+const words = (entity) => String(entity).replace(/-/g, ' ');
 const key = (label) => String(label).toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '') || 'field';
 
 // ---- storage ----
@@ -47,7 +48,7 @@ function records(entity, columns) {
   if (!rows) {
     rows = [1, 2, 3].map((i) => {
       const row = { id: crypto.randomUUID() };
-      columns.forEach((c, ci) => (row[key(c)] = ci === 0 ? `Sample ${entity} ${i}` : '—'));
+      columns.forEach((c, ci) => (row[key(c)] = ci === 0 ? `Sample ${words(entity)} ${i}` : '—'));
       return row;
     });
     store.write(`records:${entity}`, rows);
@@ -95,7 +96,7 @@ function tableWidget(w, rerender) {
   let sort = store.read(`sort:${w.entity}`, null);
   const body = h('tbody');
   const count = h('span', { class: 'muted' });
-  const add = () => recordDialog(`New ${w.entity}`, cols, null, (data) => {
+  const add = () => recordDialog(`New ${words(w.entity)}`, cols, null, (data) => {
     rows = [{ id: crypto.randomUUID(), ...data }, ...rows];
     saveRecords(w.entity, rows);
     toast('Saved');
@@ -109,7 +110,7 @@ function tableWidget(w, rerender) {
     body.replaceChildren(...view.map((r) => h('tr', {},
       cols.map((c) => h('td', {}, r[key(c)] ?? '')),
       h('td', { class: 'actions' },
-        h('button', { class: 'ghost small', onclick: () => recordDialog(`Edit ${w.entity}`, cols, r, (data) => { Object.assign(r, data); saveRecords(w.entity, rows); draw(); toast('Updated'); }) }, 'Edit'),
+        h('button', { class: 'ghost small', onclick: () => recordDialog(`Edit ${words(w.entity)}`, cols, r, (data) => { Object.assign(r, data); saveRecords(w.entity, rows); draw(); toast('Updated'); }) }, 'Edit'),
         h('button', { class: 'ghost small danger', onclick: () => { if (!confirm('Delete this row?')) return; rows = rows.filter((x) => x.id !== r.id); saveRecords(w.entity, rows); rerender(); } }, 'Delete')))));
     if (!view.length) body.append(h('tr', {}, h('td', { colSpan: cols.length + 1, class: 'muted center' }, q ? 'No rows match your search.' : 'Nothing here yet.')));
     count.textContent = `${view.length} of ${rows.length}`;
@@ -117,7 +118,7 @@ function tableWidget(w, rerender) {
   const head = h('tr', {}, cols.map((c) => h('th', {}, h('button', { class: 'sort', title: 'Sort', onclick: () => { sort = sort?.col === key(c) && sort.dir === 'asc' ? { col: key(c), dir: 'desc' } : { col: key(c), dir: 'asc' }; store.write(`sort:${w.entity}`, sort); draw(); } }, c))), h('th', {}));
   draw();
   return h('section', { class: 'panel' },
-    h('div', { class: 'row between' }, h('h2', {}, w.title), h('div', { class: 'row' }, count, h('button', { onclick: add }, `Add ${w.entity}`))),
+    h('div', { class: 'row between' }, h('h2', {}, w.title), h('div', { class: 'row' }, count, h('button', { onclick: add }, `Add ${words(w.entity)}`))),
     h('div', { class: 'scroll' }, h('table', {}, h('thead', {}, head), body)));
 }
 

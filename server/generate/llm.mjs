@@ -86,10 +86,11 @@ async function runModel({ system, content, onProgress }) {
   for await (const event of stream) {
     if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
       text += event.delta.text;
-      const count = (text.match(/^=== FILE: /gm) || []).length;
+      const headers = text.match(/^=== FILE: .+? ===/gm) || [];
+      const count = headers.length;
       if (count !== lastCount) {
         lastCount = count;
-        const current = /=== FILE: (.+?) ===[^=]*$/.exec(text)?.[1];
+        const current = headers.at(-1)?.slice(10, -4);
         onProgress?.(current ? `Claude is writing ${current}` : 'Claude is planning the build');
       }
     }

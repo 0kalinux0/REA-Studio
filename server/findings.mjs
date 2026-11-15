@@ -156,8 +156,10 @@ export function webPageElements(refId, page, src) {
     add({ category: 'feature', kind: 'dialog', ordinal: i, title: `Dialog${label(d) ? ` “${clip(label(d), 40)}”` : ''}`, detail: 'Dialog was open at capture time.', items: textOf(d).slice(0, 12), data: { label: label(d) } }));
 
   // Media / charts
-  uniq([...byRole('image'), ...byRole('img'), ...byRole('graphics-document')].map(label).filter(Boolean)).slice(0, 15).forEach((name) =>
-    add({ category: 'section', kind: 'media', title: `Image or chart “${clip(name, 50)}”`, detail: 'Labelled graphic. Its pixels are not reproduced; only its role and label are known.', data: { label: name } }));
+  const regionOf = (n) => { for (let p = parents.get(n); p; p = parents.get(p)) if (p.role === 'region' && label(p)) return label(p); return null; };
+  const seenMedia = new Set();
+  [...byRole('image'), ...byRole('img'), ...byRole('graphics-document')].filter((n) => label(n) && !seenMedia.has(label(n)) && seenMedia.add(label(n))).slice(0, 15).forEach((n) =>
+    add({ category: 'section', kind: 'media', title: `Image or chart “${clip(label(n), 50)}”`, detail: 'Labelled graphic. Its pixels are not reproduced; only its role and label are known.', data: { label: label(n), region: regionOf(n) } }));
 
   // DOM-level signals (tag names only; REA does not retain attribute values or text)
   const tags = {};
