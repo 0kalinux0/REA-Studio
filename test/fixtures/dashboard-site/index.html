@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Acme Analytics – Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<aside class="sidebar" aria-label="Primary">
+  <div class="brand">Acme Analytics</div>
+  <nav aria-label="Sections">
+    <a href="#/overview" class="active">Overview</a>
+    <a href="#/orders">Orders</a>
+    <a href="#/customers">Customers</a>
+    <a href="#/reports">Reports</a>
+    <a href="#/settings">Settings</a>
+  </nav>
+</aside>
+<main>
+  <header class="topbar">
+    <h1>Overview</h1>
+    <form role="search"><input type="search" name="q" placeholder="Search orders" aria-label="Search orders"></form>
+    <button id="new-order">New order</button>
+  </header>
+  <section class="kpis" aria-label="Key metrics">
+    <article class="kpi"><h2>Revenue</h2><p class="v">$48,210</p></article>
+    <article class="kpi"><h2>Orders</h2><p class="v">1,204</p></article>
+    <article class="kpi"><h2>Conversion</h2><p class="v">3.4%</p></article>
+    <article class="kpi"><h2>Refunds</h2><p class="v">12</p></article>
+  </section>
+  <section aria-label="Revenue trend"><h2>Revenue trend</h2><svg id="chart" role="img" aria-label="Revenue by week" viewBox="0 0 400 120"></svg></section>
+  <section aria-label="Recent orders">
+    <h2>Recent orders</h2>
+    <table>
+      <thead><tr><th>Order</th><th>Customer</th><th>Status</th><th>Total</th></tr></thead>
+      <tbody id="orders"></tbody>
+    </table>
+  </section>
+  <dialog id="order-dialog">
+    <form method="dialog">
+      <h2>New order</h2>
+      <label>Customer <input name="customer" required></label>
+      <label>Total <input name="total" type="number" required></label>
+      <label>Status <select name="status"><option>Pending</option><option>Paid</option><option>Shipped</option></select></label>
+      <button value="cancel">Cancel</button><button value="save">Save</button>
+    </form>
+  </dialog>
+</main>
+<script type="module" src="app.js"></script>
+</body>
+</html>

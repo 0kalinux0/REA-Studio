@@ -1,0 +1,17 @@
+:root{--bg:#0f172a;--panel:#1e293b;--ink:#e2e8f0;--accent:#38bdf8}
+*{box-sizing:border-box}
+body{margin:0;display:flex;font:15px/1.5 Inter,system-ui,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh}
+.sidebar{width:220px;background:var(--panel);padding:20px}
+.brand{font-weight:700;margin-bottom:24px;color:var(--accent)}
+nav a{display:block;padding:8px 10px;border-radius:8px;color:var(--ink);text-decoration:none}
+nav a.active{background:var(--accent);color:#0f172a}
+main{flex:1;padding:24px}
+.topbar{display:flex;gap:16px;align-items:center}
+.topbar h1{flex:1;margin:0}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:24px 0}
+.kpi{background:var(--panel);padding:16px;border-radius:12px}
+.kpi h2{font-size:13px;margin:0;opacity:.7}
+.v{font-size:26px;margin:4px 0 0}
+table{width:100%;border-collapse:collapse}
+th,td{padding:10px;text-align:left;border-bottom:1px solid #334155}
+button{background:var(--accent);border:0;border-radius:8px;padding:8px 14px;font-weight:600}
