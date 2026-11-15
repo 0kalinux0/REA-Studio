@@ -133,15 +133,13 @@ function render() {
   const keep = active?.id ? { id: active.id, start: active.selectionStart, end: active.selectionEnd } : null;
   const scroll = $('.main')?.scrollTop ?? 0;
   const root = $('#root');
-  if (!state.project) {
-    $('#crumb').innerHTML = '';
-    root.innerHTML = `<main class="main">${homeView()}</main>`;
-  } else {
-    $('#crumb').innerHTML = `<span>/</span><strong>${esc(state.project.name)}</strong>`;
-    const views = { references: referencesView, select: selectView, plan: planView, build: buildView, versions: versionsView };
-    root.innerHTML = `<nav class="steps" aria-label="Workflow">${STEPS.map((s, i) => `<button class="step ${stepDone(s.id) ? 'done' : ''}" ${s.id === state.step ? 'aria-current="step"' : ''} data-action="step" data-step="${s.id}"><span class="num">${stepDone(s.id) ? '✓' : i + 1}</span><span><b>${s.title}</b><span class="sub">${s.sub}</span></span></button>`).join('')}
-      <span class="spacer"></span><button class="btn quiet sm" data-action="home">← All projects</button></nav>
-      <main class="main">${views[state.step]()}</main>`;
+  const views = { references: referencesView, select: selectView, plan: planView, build: buildView, versions: versionsView };
+  root.innerHTML = `${sidebar()}<main class="main">${state.project ? views[state.step]() : homeView()}</main>`;
+  // Editorial eyebrow above each page title.
+  const h1 = $('.pagehead h1');
+  if (h1) {
+    const i = STEPS.findIndex((x) => x.id === state.step);
+    h1.insertAdjacentHTML('beforebegin', `<div class="eyebrow">${state.project ? `<b>${String(i + 1).padStart(2, '0')}</b> / 05 — ${esc(STEPS[i].title)}` : '<b>REA Studio</b> — analyse, choose, build'}</div>`);
   }
   if ($('.main')) $('.main').scrollTop = scroll;
   if (keep) {
@@ -153,9 +151,26 @@ function render() {
   }
 }
 
+const LOGO = `<svg viewBox="0 0 32 32" width="34" height="34" aria-hidden="true"><rect width="32" height="32" rx="9" fill="var(--ink)"/><path d="M11 23V9h6a4 4 0 0 1 0 8h-6m6 0l5 6" fill="none" stroke="var(--bg)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+function sidebar() {
+  const p = state.project;
+  const item = (attrs, label, key, cls = '', mark = '') => `<button class="step ${cls}" ${attrs}><span class="mark">${mark}</span><span class="t">${label}</span>${key ? `<kbd>${key}</kbd>` : ''}</button>`;
+  const top = p
+    ? `<div class="navlabel">Workflow</div>${STEPS.map((s, i) => item(`data-action="step" data-step="${s.id}" ${s.id === state.step ? 'aria-current="step"' : ''} title="${s.sub}"`, s.title, i + 1, stepDone(s.id) ? 'done' : '', stepDone(s.id) ? '✓' : '')).join('')}`
+    : `<div class="navlabel">Projects</div>${state.projects.length ? state.projects.slice(0, 9).map((x, i) => item(`data-action="open-project" data-id="${x.id}"`, esc(x.name), i + 1)).join('') : '<div class="navempty">None yet</div>'}`;
+  return `<nav class="steps" aria-label="${p ? 'Workflow' : 'Projects'}">
+    <a class="brand" href="#/" aria-label="REA Studio home">${LOGO}<span><b>REA Studio</b><span class="sub">${p ? esc(p.name) : 'Analyse. Choose. Build.'}</span></span></a>
+    ${top}
+    <div class="navlabel">Studio</div>
+    ${item('data-action="open-capabilities"', 'What can be analysed', 'C')}
+    ${item('data-action="open-settings"', 'Settings', 'S')}
+    ${p ? item('data-action="home"', 'All projects', 'H') : ''}
+  </nav>`;
+}
+
 function homeView() {
   return `<div class="page">
-    <div class="pagehead"><div><h1>Build your own version of software you like</h1>
+    <div class="pagehead"><div><h1>Build your own version <span class="dim">of software you like.</span></h1>
       <p>Point the studio at websites, web apps or desktop apps. It uses REA to investigate them, shows you what it found and how sure it is, and builds a working application from the parts you choose.</p></div></div>
     <form class="card stack" data-form="new-project">
       <h2>Start a project</h2>
@@ -178,7 +193,7 @@ function referencesView() {
   const c = state.classify;
   const manual = state.addMode === 'manual';
   return `<div class="page">
-    <div class="pagehead"><div><h1>References</h1><p>Add each thing you want to draw from: a page of a website or web app, a desktop application folder, or simply a description. Add several to combine them.</p></div>
+    <div class="pagehead"><div><h1>References. <span class="dim">What should we study?</span></h1><p>Add each thing you want to draw from: a page of a website or web app, a desktop application folder, or simply a description. Add several to combine them.</p></div>
       <button class="btn primary" data-action="step" data-step="select" ${p.references.some((r) => r.elements?.length) ? '' : 'disabled'}>Next: choose what to keep →</button></div>
     <form class="card stack" data-form="add-reference">
       <div class="row between"><h2>Add a reference</h2>
@@ -240,7 +255,7 @@ function selectView() {
   }).join('');
   const d = p.directives;
   return `<div class="page wide">
-    <div class="pagehead"><div><h1>Choose what to keep, change or leave out</h1><p>Everything found is listed with how it is known. Use “Change” to say in your own words how a piece should differ. Mix elements from different references freely.</p></div>
+    <div class="pagehead"><div><h1>Keep, change <span class="dim">or leave out.</span></h1><p>Everything found is listed with how it is known. Use “Change” to say in your own words how a piece should differ. Mix elements from different references freely.</p></div>
       <button class="btn primary" data-action="make-plan">Draft the plan →</button></div>
     <div class="split">
       <div class="stack">
@@ -276,7 +291,7 @@ function planView() {
   const rep = plan.directiveReport ?? { applied: [], unapplied: [] };
   const pending = [...rep.unapplied.map((u) => u.text), ...plan.modifications.map((m) => `${m.title}: ${m.note}`), ...plan.revisions];
   return `<div class="page">
-    <div class="pagehead"><div><h1>Review the plan</h1><p>This is exactly what will be built. Edit it here, add notes for the builder, and approve when it looks right. Nothing is built until you approve.</p></div>
+    <div class="pagehead"><div><h1>Review the plan <span class="dim">before anything is built.</span></h1><p>This is exactly what will be built. Edit it here, add notes for the builder, and approve when it looks right. Nothing is built until you approve.</p></div>
       <div class="row">${plan.approved && !plan.stale ? `<span class="status ok">Approved</span><button class="btn primary" data-action="step" data-step="build">Go to build →</button>` : `<button class="btn primary" data-action="approve-plan">Approve plan</button>`}</div></div>
     ${plan.stale ? `<div class="banner"><span>Your selections or directions changed after this plan was drafted.</span><button class="btn sm" data-action="make-plan">Update the plan</button></div>` : ''}
     <div class="grid2">
@@ -338,7 +353,7 @@ function buildView() {
   const p = state.project;
   const building = Boolean(state.jobs.build);
   if (!p.versions.length) {
-    return `<div class="page"><div class="pagehead"><div><h1>Build</h1><p>Turn the approved plan into a working application. You can preview it here and keep refining.</p></div></div>
+    return `<div class="page"><div class="pagehead"><div><h1>Build <span class="dim">from the approved plan.</span></h1><p>Turn the approved plan into a working application. You can preview it here and keep refining.</p></div></div>
       ${!planReady() || !p.plan.approved ? `<div class="banner"><span>${p.plan ? 'The plan needs your approval first.' : 'Draft and approve a plan first.'}</span><button class="btn sm" data-action="step" data-step="plan">Review the plan</button></div>` : ''}
       <div class="card stack"><h2>Choose how to build</h2>${engineChooser()}
         <div class="row"><button class="btn primary" data-action="build" ${planReady() && p.plan.approved && !building ? '' : 'disabled'}>Build version 1</button><div data-job="build">${progressHtml('build')}</div></div>
@@ -349,7 +364,7 @@ function buildView() {
   const src = `${state.info.previewOrigin}/${p.id}/${v.n}/`;
   const stale = p.plan?.stale || !p.plan?.approved;
   return `<div class="page wide">
-    <div class="pagehead"><div><h1>Build & preview</h1><p>Use the app below as you would for real. Describe any change in plain language to produce a new version; earlier versions stay available.</p></div></div>
+    <div class="pagehead"><div><h1>Build &amp; preview. <span class="dim">Try it, then refine.</span></h1><p>Use the app below as you would for real. Describe any change in plain language to produce a new version; earlier versions stay available.</p></div></div>
     <div class="buildgrid">
       <div class="frame-wrap">
         <div class="frame-bar"><label class="row small">Version <select id="version-pick" style="width:auto">${[...p.versions].reverse().map((x) => `<option value="${x.n}" ${x.n === v.n ? 'selected' : ''}>v${x.n}${x.n === latest().n ? ' (latest)' : ''}</option>`).join('')}</select></label>
@@ -381,7 +396,7 @@ function versionsView() {
   if (!p.versions.length) return `<div class="page"><div class="empty">No versions yet. Build the first one to see it here.<br><br><button class="btn primary" data-action="step" data-step="build">Go to build</button></div></div>`;
   const cv = state.view.codeVersion;
   return `<div class="page">
-    <div class="pagehead"><div><h1>Versions & export</h1><p>Every build and change is kept. Preview or restore any version, read its source, or download it as a ready-to-run project.</p></div></div>
+    <div class="pagehead"><div><h1>Versions <span class="dim">&amp; export.</span></h1><p>Every build and change is kept. Preview or restore any version, read its source, or download it as a ready-to-run project.</p></div></div>
     <div class="card"><div data-job="build">${progressHtml('build')}</div>${[...p.versions].reverse().map((v) => {
       const ok = v.verify ? (v.verify.ok ? ['ok', 'Checks passed'] : ['bad', 'Checks found problems']) : ['', 'Not checked'];
       return `<div class="version"><div class="vnum">v${v.n}</div>
@@ -600,6 +615,14 @@ document.addEventListener('change', (ev) => {
   else if (t.dataset.plan) planUpdate({ [t.dataset.plan]: t.value }).catch(fail);
   else if (t.dataset.theme) planUpdate({ theme: { [t.dataset.theme]: t.value } }).catch(fail);
   else if (t.dataset.pageTitle) planUpdate({ pageTitles: { [t.dataset.pageTitle]: t.value } }).catch(fail);
+});
+
+// Keyboard shortcuts shown in the sidebar (ignored while typing or when a dialog is open).
+addEventListener('keydown', (ev) => {
+  if (ev.metaKey || ev.ctrlKey || ev.altKey || $('#modal').open || ev.target.closest?.('input, textarea, select, [contenteditable]')) return;
+  const k = ev.key.toLowerCase();
+  const btn = /^[1-9]$/.test(k) ? $$('.steps .step').filter((x) => x.querySelector('kbd')?.textContent === k)[0] : k === 'c' ? $('.steps [data-action="open-capabilities"]') : k === 's' ? $('.steps [data-action="open-settings"]') : k === 'h' ? $('.steps [data-action="home"]') : null;
+  if (btn) { ev.preventDefault(); btn.click(); }
 });
 addEventListener('hashchange', () => flushSave().then(route));
 
