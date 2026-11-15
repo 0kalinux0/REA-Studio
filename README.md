@@ -5,6 +5,10 @@ application of your own. It uses [REA](https://github.com/morluto/rea) to invest
 software, shows you what it found and how it knows, lets you choose and redirect the parts you
 want, and then builds, checks and refines the result with you.
 
+![Choosing findings, each labelled with how it is known](docs/screenshots/select.png)
+
+![Build and preview with automated checks](docs/screenshots/build.png)
+
 ## Start it
 
 Requires Node.js 22.23.4+ (the version REA needs) and a Chrome-family browser (Chrome, Chromium,
