@@ -1,4 +1,4 @@
-// Mindflow Studio GUI. Plain ES module, no build step.
+// REA Studio GUI. Plain ES module, no build step.
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);

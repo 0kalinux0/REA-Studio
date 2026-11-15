@@ -8,7 +8,7 @@ import fs from 'node:fs';
 const require = createRequire(import.meta.url);
 
 export function reaScript() {
-  if (process.env.MINDFLOW_REA_SCRIPT) return process.env.MINDFLOW_REA_SCRIPT;
+  if (process.env.REA_STUDIO_REA_SCRIPT) return process.env.REA_STUDIO_REA_SCRIPT;
   const pkg = require.resolve('rea-agents/package.json');
   return path.join(path.dirname(pkg), 'scripts', 'rea.mjs');
 }

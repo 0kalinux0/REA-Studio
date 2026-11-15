@@ -28,7 +28,7 @@ const fake = http.createServer((req, res) => {
 });
 await new Promise((r) => fake.listen(0, '127.0.0.1', r));
 
-process.env.MINDFLOW_DATA = fs.mkdtempSync(path.join(os.tmpdir(), 'mindflow-llm-'));
+process.env.REA_STUDIO_DATA = fs.mkdtempSync(path.join(os.tmpdir(), 'rea-studio-llm-'));
 process.env.ANTHROPIC_API_KEY = 'test-key';
 process.env.ANTHROPIC_BASE_URL = `http://127.0.0.1:${fake.address().port}`;
 delete process.env.ANTHROPIC_AUTH_TOKEN;

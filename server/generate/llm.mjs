@@ -25,7 +25,7 @@ function client() {
   return apiKey ? new Anthropic({ apiKey }) : new Anthropic();
 }
 
-const SYSTEM = `You are the build engine inside Mindflow Studio, a tool that helps a person build their own application informed by an inventory of features observed in reference software.
+const SYSTEM = `You are the build engine inside REA Studio, a tool that helps a person build their own application informed by an inventory of features observed in reference software.
 
 You write complete, working, original front-end applications.
 

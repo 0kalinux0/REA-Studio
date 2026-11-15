@@ -7,7 +7,7 @@ import fsp from 'node:fs/promises';
 import path from 'node:path';
 import crypto from 'node:crypto';
 
-export const DATA_DIR = path.resolve(process.env.MINDFLOW_DATA || path.join(process.cwd(), 'data'));
+export const DATA_DIR = path.resolve(process.env.REA_STUDIO_DATA || path.join(process.cwd(), 'data'));
 const PROJECTS = path.join(DATA_DIR, 'projects');
 const SETTINGS = path.join(DATA_DIR, 'settings.json');
 

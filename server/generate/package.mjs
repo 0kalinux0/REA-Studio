@@ -18,7 +18,7 @@ const STATUS_TEXT = {
 };
 
 export function provenanceMarkdown(project, plan, { engine, notes = [] }) {
-  const L = [`# Provenance for ${plan.appName}`, '', `Generated ${new Date().toISOString()} by Mindflow Studio using REA ${reaVersion() ?? '(unknown version)'} and the **${engine}** build engine.`, '',
+  const L = [`# Provenance for ${plan.appName}`, '', `Generated ${new Date().toISOString()} by REA Studio using REA ${reaVersion() ?? '(unknown version)'} and the **${engine}** build engine.`, '',
     'This app was written from an inventory of observed structure and behaviour. It contains no code, text content, data or assets copied from the references. You are responsible for having the right to analyse the references and for how you use the result.', '',
     '## References', ''];
   for (const r of project.references) {
@@ -69,7 +69,7 @@ ${Object.keys(files).sort().map((f) => `- \`${f}\``).join('\n')}
 ## Good to know
 
 - Data is saved in your browser's localStorage. There is no backend; clearing site data resets the app.
-- Built by Mindflow Studio with the ${engine} engine. See \`PROVENANCE.md\` for sources and known gaps.
+- Built by REA Studio with the ${engine} engine. See \`PROVENANCE.md\` for sources and known gaps.
 `;
 }
 

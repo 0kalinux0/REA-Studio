@@ -10,7 +10,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
-process.env.MINDFLOW_DATA = fs.mkdtempSync(path.join(os.tmpdir(), 'mindflow-test-'));
+process.env.REA_STUDIO_DATA = fs.mkdtempSync(path.join(os.tmpdir(), 'rea-studio-test-'));
 // This test checks behaviour with no AI credentials configured.
 delete process.env.ANTHROPIC_API_KEY;
 delete process.env.ANTHROPIC_AUTH_TOKEN;

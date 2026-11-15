@@ -1,9 +1,12 @@
-# Mindflow Studio
+# REA Studio
 
 A local graphical app that takes you from "I like how that software does X" to a working
 application of your own. It uses [REA](https://github.com/morluto/rea) to investigate reference
 software, shows you what it found and how it knows, lets you choose and redirect the parts you
 want, and then builds, checks and refines the result with you.
+
+REA Studio is an independent project built on REA. It is not part of, or endorsed by, the REA
+project.
 
 ![Choosing findings, each labelled with how it is known](docs/screenshots/select.png)
 
@@ -43,7 +46,7 @@ The studio opens at http://127.0.0.1:4600. Use `npm start -- --port 4700` for an
 5. **Versions & export** — preview, read the source of, or restore any version, and download
    it as a zip with a README and run instructions (`npm start`, no dependencies).
 
-Projects are saved automatically in `./data` (set `MINDFLOW_DATA` to move it).
+Projects are saved automatically in `./data` (set `REA_STUDIO_DATA` to move it).
 
 ## How findings are labelled
 

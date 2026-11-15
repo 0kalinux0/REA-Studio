@@ -1,4 +1,4 @@
-// Mindflow Studio server: JSON API + GUI on one loopback port, generated-app previews on the
+// REA Studio server: JSON API + GUI on one loopback port, generated-app previews on the
 // next port (a separate origin, so generated code can never call the studio API).
 import http from 'node:http';
 import fs from 'node:fs';

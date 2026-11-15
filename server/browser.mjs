@@ -11,7 +11,7 @@ import { DATA_DIR, loadSettings } from './store.mjs';
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 export function findChrome() {
-  const env = process.env.MINDFLOW_CHROME || process.env.CHROME_PATH;
+  const env = process.env.REA_STUDIO_CHROME || process.env.CHROME_PATH;
   if (env && fs.existsSync(env)) return env;
   const candidates = {
     darwin: [
@@ -68,7 +68,7 @@ export async function ensureBrowser() {
   await stopBrowser();
   const exe = findChrome();
   if (!exe) {
-    throw Object.assign(new Error('No Chrome-family browser found. Install Chrome/Chromium/Edge/Brave or set MINDFLOW_CHROME to its executable.'), { code: 'no_browser' });
+    throw Object.assign(new Error('No Chrome-family browser found. Install Chrome/Chromium/Edge/Brave or set REA_STUDIO_CHROME to its executable.'), { code: 'no_browser' });
   }
   const port = await freePort();
   const profile = path.join(DATA_DIR, 'browser-profile');
