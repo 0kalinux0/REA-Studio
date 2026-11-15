@@ -17,5 +17,13 @@
   },
   "engines": {
     "node": "^22.23.4 || ^24.22.1 || >=26.12.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/0kalinux0/rea-studio.git"
+  },
+  "homepage": "https://github.com/0kalinux0/rea-studio#readme",
+  "bugs": {
+    "url": "https://github.com/0kalinux0/rea-studio/issues"
   }
 }
